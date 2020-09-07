@@ -5,7 +5,7 @@ import pyeviews
 
 def fn_build_dictdata(Spattern,Stype):#Retrieve eviews values and store them in a dictionary
 
-    pythoncom.CoInitialize()
+    #pythoncom.CoInitialize()
     eviewsapp=pyeviews.GetEViewsApp(version='EViews.Manager.11',instance='existing', showwindow=True)
     
     Sinstruction = '=@wlookup("' + Spattern + '","' + Stype + '")'
@@ -34,7 +34,7 @@ def fn_build_dictdata(Spattern,Stype):#Retrieve eviews values and store them in 
 
         Ddictfull[Smnemonic.lower()] = Ddict
 
-    pythoncom.CoUninitialize()
+    #pythoncom.CoUninitialize()
         
     return Ddictfull
 
