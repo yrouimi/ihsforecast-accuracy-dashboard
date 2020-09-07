@@ -1,3 +1,5 @@
+import dash_daq as daq
+
 def fn_create_paramsboxform(Schartid,Lcontrols):
         
     Dicstyle = {'width': '100%', 'display': 'flex','align-items': 'center','justify-content':'center'}
