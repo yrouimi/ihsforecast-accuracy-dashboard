@@ -1,3 +1,33 @@
+                         
+def fn_help(Spart):
+    
+    if Spart == 'Part 1':
+        Smsg = '- The set of cards gives a summary of how much IHS over/underestimated average growth over the years selected at each of the horizons selected' 
+        Smsg = Smsg + '- The top right chart gives the same average information, and shows the detail for each year'
+        Smsg = Smsg + '- The top left chart shows for each year how the projection evolved in each forecast vintage'
+        Smsg = Smsg + '- The bottom dotted lines/surface chart shows at each point in time the forecast quarters ahead and compares it to what actually materialized'
+        
+    if Spart == 'Part 4':
+        Smsg = '- The top left chart shows the forecast for the current year (or the next) at each point in time' 
+        Smsg = Smsg + '- The top right chart displays the error forecasting the current year (or the next) at each point in time'
+        Smsg = Smsg + '- The bottom left chart shows the sum of errors made by forecaster at each forecast horizon (for the years selected)'
+        Smsg = Smsg + '- The bottom right chart shows that cumulative error by forecaster (eg the last point in the left-hand chart)'
+        
+    if Spart == 'Part 2':
+        Smsg = '- The top left chart shows the error for each year / forecast horizon and tells when exactly is the error' 
+        Smsg = Smsg + '- The bottom left chart displays the contributions to the forecast error (what the headline miss is attributable to)'
+        Smsg = Smsg + '- The top right chart shows the error for key variables of the global economy'
+        Smsg = Smsg + '- The bottom right chart shows a detail of the forecast error for each country. The closer from the center, the more accurate'
+
+    if Spart == 'Part 3':
+        Smsg = '- The top left chart shows the projection at a point in time for every contributor' 
+        Smsg = Smsg + '- The top right chart shows the position of the forecast for the selected country against other competitors'
+        Smsg = Smsg + '- The bottom chart compares IHS forecast to consensus in all available countries'
+
+        
+        
+    return Smsg
+
 from dash import Dash
 import dash_core_components as dcc
 import dash_html_components as html
