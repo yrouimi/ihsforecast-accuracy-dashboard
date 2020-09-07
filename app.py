@@ -2,7 +2,6 @@
 import dash_daq as daq
 import datetime as dt;from dateutil.relativedelta import relativedelta
 import pyeviews
-import pythoncom
 
 def fn_build_dictdata(Spattern,Stype):#Retrieve eviews values and store them in a dictionary
 
