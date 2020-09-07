@@ -97,6 +97,7 @@ import plotly.graph_objs as plotlygraphs
 import dash_bootstrap_components as dbc
 
 app = Dash(__name__,external_stylesheets=['https://codepen.io/rmarren1/pen/mLqGRg.css',"https://use.fontawesome.com/releases/v5.1.0/css/all.css",dbc.themes.BOOTSTRAP])
+server = app.server
 app.config['suppress_callback_exceptions'] = True
 app.title = 'Forecast accuracy dashboard'
 #dbc.themes.BOOTSTRAP
