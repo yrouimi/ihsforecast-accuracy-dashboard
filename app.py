@@ -1023,3 +1023,5 @@ def fn_create_chart2(Scon,Siso,Vminmaxyear):
     #pyeviews.Cleanup()
     return fig
 
+if __name__ == '__main__':
+    app.run_server()
