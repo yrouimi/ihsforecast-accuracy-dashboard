@@ -1,4 +1,168 @@
+
 import dash_daq as daq
+import datetime as dt;from dateutil.relativedelta import relativedelta
+import pyeviews
+import pythoncom
+
+def fn_build_dictdata(Spattern,Stype):#Retrieve eviews values and store them in a dictionary
+
+    pythoncom.CoInitialize()
+    eviewsapp=pyeviews.GetEViewsApp(version='EViews.Manager.11',instance='existing', showwindow=True)
+    
+    Sinstruction = '=@wlookup("' + Spattern + '","' + Stype + '")'
+    Sseries = fn_get_eviewsvalue(eviewsapp, Sinstruction)
+    
+    Vdates = fn_create_datelist('2010Q1 2023Q4','Q')
+    Vdatesshort = fn_create_datelist('2014Q1 2021Q4','Q')
+    
+    Vseriesname = Sseries.split()
+        
+    #Build a dictionary of dictionaries
+    Ddictfull = {}
+
+    for Smnemonic in Vseriesname:
+
+        if 'ihs' in Smnemonic.lower():
+            Vd = Vdates
+        else:
+            Vd = Vdatesshort
+            
+        Ddict={}
+        
+        for Sdate in Vd:
+            
+            Ddict[Sdate] = fn_get_eviewsdatapoint(eviewsapp,Smnemonic,Sdate)
+
+        Ddictfull[Smnemonic.lower()] = Ddict
+
+    pythoncom.CoUninitialize()
+        
+    return Ddictfull
+
+
+def fn_ping_dictdatabase(Dictdata,Smnemonic,Soperation,Sdaterange):
+
+    Vmat = [];Smnemonic = Smnemonic.lower()
+
+    if len(Sdaterange)==6:
+        Vdates = fn_create_datelist(Sdaterange + ' ' + Sdaterange,'Q')    
+    else:
+        Vdates = fn_create_datelist(Sdaterange,'Q')
+
+    if Smnemonic not in Dictdata:
+        for Sdate in Vdates:
+            Vmat.append(None)
+        return Vmat
+        
+    if '=' in Soperation:
+        Vargs = Soperation.split('=')
+        Sd = Vargs[0];Sdate = Sd.split('-')
+        Dval = float(Vargs[1])
+        if len(Sd) == 4:
+            Sd = Sd + 'Q4'
+            Drebasefact = fn_ping_dictdatabase(Dictdata,Smnemonic,'4qma',Sd)
+        else:
+            Drebasefact = fn_ping_dictdatabase(Dictdata,Smnemonic,'lvl',Sd)            
+        
+    for Sdate in Vdates:
+    
+        if Soperation.lower() == 'lvl':
+            Vmat.append(Dictdata[Smnemonic][Sdate])    
+    
+        if Soperation.lower() == '4qma':
+            
+            Sdate2 = fn_Qdate_offset(Sdate,-3)            
+            Vmat2 = fn_ping_dictdatabase(Dictdata,Smnemonic,'lvl',Sdate2 + ' ' + Sdate)
+            Vmat.append(fn_average(Vmat2))
+        
+        if Soperation.lower() == 'yoy':
+
+            Scompa = fn_Qdate_offset(Sdate,-4)
+            if Dictdata[Smnemonic][Scompa]!=None:
+                
+                Vmat.append(Dictdata[Smnemonic][Sdate]/Dictdata[Smnemonic][Scompa]-1)
+        
+        if Soperation.lower() == '4q4q':
+
+            Scompa =fn_Qdate_offset(Sdate,-7)
+            
+            if Dictdata[Smnemonic][Scompa]!=None:
+                    
+                Vdates2 = fn_create_datelist(Scompa + ' ' + Sdate,'Q')
+                
+                Vy = [Dictdata[Smnemonic][Sdate] for Sdate in Vdates2]
+                
+                Snone =fn_isvalueinlist(None,Vy)
+                
+                if Snone == 'no':
+                    valeur = Dictdata[Smnemonic][Vdates2[4]]+Dictdata[Smnemonic][Vdates2[5]]+Dictdata[Smnemonic][Vdates2[6]]+Dictdata[Smnemonic][Vdates2[7]]
+                    valeur = valeur/(Dictdata[Smnemonic][Vdates2[0]]+Dictdata[Smnemonic][Vdates2[1]]+Dictdata[Smnemonic][Vdates2[2]]+Dictdata[Smnemonic][Vdates2[3]])-1
+                    Vmat.append(valeur)
+                else:
+                    Vmat.append(None)
+                
+            else:
+                Vmat.append(None)
+
+        if fn_extract_leftmidright('left',Soperation.lower(),8) == 'q4q4diff':
+
+            Scompa =fn_Qdate_offset(Sdate,-4)
+            
+            if Dictdata[Smnemonic][Scompa]!=None:
+
+                Vdates2 = fn_create_datelist(Scompa + ' ' + Sdate,'Q')
+                valeur = Dictdata[Smnemonic][Vdates2[4]]
+                valeur = (valeur-Dictdata[Smnemonic][Vdates2[0]])
+                
+                if fn_extract_leftmidright('right',Soperation.lower(),3) == 'bps':
+                    valeur= valeur*100
+                
+                Vmat.append(valeur)
+        
+        if '=' in Soperation:
+            
+            if Dictdata[Smnemonic][Sdate]!=None:
+                valeur = Dictdata[Smnemonic][Sdate]/Drebasefact[0]*Dval
+            else:
+                valeur = None
+            
+            Vmat.append(valeur)
+                
+    return Vmat    
+
+def fn_Qdate_offset(Sdate,nbq):
+    
+    iyear = int(Sdate[:4]);n = len(Sdate);imonth = int(Sdate[(n-1):])*3
+    Ddate  = dt.datetime(iyear, imonth, 1);Dnewdate = Ddate+relativedelta(months=3*nbq)
+    Snewdate = str(Dnewdate.year) + 'Q' + str(int(Dnewdate.month/3))
+    return Snewdate
+    
+def fn_create_datelist(Sdaterange,Sfreq):
+    
+    dateslist = []
+    
+    Sdatestart=Sdaterange[:6];Sdateend=Sdaterange[7:]
+    
+    iyear = int(Sdatestart[:4]);n = len(Sdatestart);imonth = int(Sdatestart[(n-1):])*3
+    Ddatestart  = dt.datetime(iyear, imonth, 1);Ddatestart  = Ddatestart+relativedelta(months=-3)
+    
+    iyear = int(Sdateend[:4]);n = len(Sdateend);imonth = int(Sdateend[(n-1):])*3
+    Ddateend  = dt.datetime(iyear, imonth, 1);Ddateend = Ddateend+relativedelta(months=-3)
+
+    if Sfreq == 'Q':
+            
+        while True:
+
+            Ddatestart = Ddatestart+relativedelta(months=3);Sdate = str(Ddatestart.year) + 'Q' + str(Ddatestart.month//3)
+            dateslist.append(Sdate)
+            
+            if(Ddatestart>Ddateend):
+                break
+        
+    return dateslist
+
+
+
 
 def fn_create_paramsboxform(Schartid,Lcontrols):
         
@@ -372,32 +536,63 @@ app.layout = html.Div(
     html.Div(dui.Layout(grid=grid4,controlpanel=controlpanel4),style={'height': '83vh','width': '99vw'})])
 
 
+######################################################################################################################################################
+######################################################################################################################################################
+######################################################################################################################################################
 
-#app.layout = html.Div(
-#    [html.Div(dui.Layout(grid=grid,controlpanel=controlpanel),style={'height': '200vh','width': '99vw'}),
-#    html.Div(dui.Layout(grid=grid2,controlpanel=controlpanel2),style={'height': '200vh','width': '99vw'}),
-#    html.Div(dui.Layout(grid=grid3,controlpanel=controlpanel3),style={'height': '200vh','width': '99vw'}),
-#    html.Div(dui.Layout(grid=grid4,controlpanel=controlpanel4),style={'height': '200vh','width': '99vw'})])
+@app.callback(Output('chart2', 'figure'),[Input('ConceptSelection', 'value'),Input('IsoSelection', 'value'),Input('PeriodSelection','value')])
+def fn_create_chart2(Scon,Siso,Vminmaxyear):
+
+    #import pyeviews
+    #pythoncom.CoInitialize()
+    #eviewsapp=pyeviews.GetEViewsApp(version='EViews.Manager.11',instance='existing', showwindow=True)
+    
+    fig = plotlygraphs.Figure(chart_layout)
+    fig.update_layout({"title": {"text": 'Behaviour of forecast for each year',"font": {"size": 14}},'xaxis':{'title':'Vintage'},'yaxis':{'title':'Projection (%y/y)'}})
+
+    #Key vectors and variables    
+    Vdates = [i for i in range(Vminmaxyear[0],Vminmaxyear[1]+1)]
+    Vvintages = ['Q115','Q215','Q315','Q415','Q116','Q216','Q316','Q416','Q117','Q217','Q317','Q417','Q118','Q218','Q318','Q418','Q119','Q219','Q319','Q419','Q120','Q220']
+    Sprovider = 'IHS'
+    
+    compteur = 0
+
+    for iDate in Vdates:
+
+        Sdate = str(iDate)
+        compteur = compteur+1
+        Vx = [];Vy = [];Vmarkers_size = []
+        Bnomoredata = False
+
+        for Svintage in Vvintages:
+
+            if Sprovider != 'Actual':
+                Smnemonic = Scon + "_" + Siso + '_' + Svintage + '_ihs'
+            else:
+                Smnemonic = Scon + "_" + Siso +'_0' + '_ihs'
+
+            if Bnomoredata==False:
+                Vy2 = fn_ping_dictdatabase(DictDatabase,Smnemonic,'4q4q',Sdate + 'Q4')
+                Vy.append(Vy2[0])
+                Vx.append(Svintage)
+
+            if Svintage=='Q2' + str(int(fn_extract_leftmidright('right',Sdate,2))+1):
+                Vmarkers_size.append(20)
+                Bnomoredata = True
+            else:
+                if Bnomoredata == False:
+                    Vmarkers_size.append(8)
+        
+        Vx = fn_convert_Q115to2015Q1date(Vx)
+        
+        fig.add_trace(plotlygraphs.Scatter(x=Vx,y=Vy,mode='lines+markers',name=Sdate,marker_size=Vmarkers_size))
+       
+    return fig
 
 
-#grid = dui.Grid(_id="grid", num_rows=6, num_cols=12, grid_padding=5) #Forecast accuracy
-#grid2 = dui.Grid(_id="grid2", num_rows=9, num_cols=12, grid_padding=5) #Sources of forecast error
-#grid3 = dui.Grid(_id="grid3", num_rows=5, num_cols=12, grid_padding=5) #Forecast positioning
-#grid4 = dui.Grid(_id="grid4", num_rows=5, num_cols=12, grid_padding=5) #Forecast positioning
 
 
-#, style={'backgroundColor':'blue'}
-#html.Div(
-#    dui.Layout(
-#        grid=grid,
-#        controlpanel=controlpanel
-#    ),
-#    style={
-#        'height': '100vh',
-#        'width': '100vw'
-#    }
-# )	 )
-#app.layout = html.Div(
-#    [html.Div(dui.Layout(grid=grid),style={'height': '50vh','width': '100vw'}),
-#    html.Div(dui.Layout(grid=grid2),style={'height': '50vh','width': '100vw'})]
-#)
+
+
+
+
