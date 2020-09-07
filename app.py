@@ -1,3 +1,60 @@
+def fn_create_paramsboxform(Schartid,Lcontrols):
+        
+    Dicstyle = {'width': '100%', 'display': 'flex','align-items': 'center','justify-content':'center'}
+    
+    Vcontrols = []
+    
+    for Dcontrol in Lcontrols: #Loop over each control dictionary
+    
+        #1) Control label: 
+        Slabel = Dcontrol['Slabel']
+        Swhat = Dcontrol['Swhat'] #What is the element? 'Year','Color', anything
+        Sid = Schartid + Swhat #Will be used in callbacks
+        Stype = Dcontrol['Stype'] #Type of control
+        Vvalues = Dcontrol['Lvalues']
+        print(Vvalues)
+        
+        labelobject = html.Div([dbc.Label(Slabel, html_for=Sid,style=Dicstyle)],style=Dicstyle)
+        
+        if Stype.lower()=='input':
+
+            #controlobject = html.Div([dbc.Input(type=Stype, id=Sid,debounce=True,placeholder='Enter ' + Swhat,value = Vvalues[0])],style=dict(width= '50%',display='flex', justifyContent='center'))
+            controlobject = dbc.Col(html.Div([dbc.Input(type=Stype, id=Sid,debounce=True,placeholder='Enter ' + Swhat,value = Vvalues[0])]),align='center')
+            
+        if Stype.lower()=='dropdown':
+            
+            Doptions = Dcontrol['Soptions']
+            
+            Vchoices = [{'label': u, 'value': v} for u,v in Doptions.items()]
+        
+            controlobject = html.Div([dcc.Dropdown(id=Sid,options=Vchoices,value = Vvalues[0])],style=Dicstyle)
+        
+        if Stype.lower()=='radio':
+            
+            Doptions = Dcontrol['Soptions']
+            
+            Vchoices = [{'label': u, 'value': v} for u,v in Doptions.items()]
+        
+            controlobject = html.Div([dbc.RadioItems(id=Sid,options=Vchoices,value = Vvalues[0])],style=Dicstyle)
+
+        if Stype.lower()=='checklist':
+        
+            Doptions = Dcontrol['Soptions']
+            Vchoices = [{'label': u, 'value': v} for u,v in Doptions.items()]
+            controlobject = html.Div([dbc.Checklist(id=Sid,options=Vchoices,value = Vvalues)],style=Dicstyle)
+        
+        if Stype.lower()=='toggle':
+            
+            onoff = Dcontrol['Soptions']
+            Bonoff = onoff['Son']
+            controlobject = html.Div([daq.BooleanSwitch(id=Sid,on=Bonoff,color="#66CC66")],style=Dicstyle)  
+        
+        Vcontrols.append(dbc.FormGroup([labelobject,controlobject],row=True))
+        
+    #cardheader=dbc.CardHeader("Chart options")
+    form = [dbc.CardHeader("Chart options",style=Dicstyle),dbc.CardBody(dbc.Form(Vcontrols))]
+    #style={'height':'100vh'}
+    return dbc.Card(form)
                          
 def fn_help(Spart):
     
