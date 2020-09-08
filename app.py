@@ -9,7 +9,7 @@ import pandas as pd
 
 def fn_build_dictdata(Spattern,Stype):#Retrieve eviews values and store them in a dictionary
 
-    df = pd.read_excel (r'Archive.xlsx', sheet_name='Sheet1')
+    df = pd.read_excel (r'Test.xlsx', sheet_name='Sheet1')
     df = df.astype(object).where(pd.notnull(df),None)
     df = df.to_dict()
 
