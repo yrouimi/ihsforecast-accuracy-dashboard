@@ -3,7 +3,6 @@ import datetime as dt;from dateutil.relativedelta import relativedelta
 import plotly.graph_objects as plotlygraphs
 import plotly
 from plotly.offline import iplot
-from ipywidgets import interact, widgets
 from IPython.display import display
 import dash_daq as daq
 import pandas as pd
