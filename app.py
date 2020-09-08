@@ -1,43 +1,86 @@
 
-import dash_daq as daq
 import datetime as dt;from dateutil.relativedelta import relativedelta
-import pyeviews
+import plotly.graph_objects as plotlygraphs
+import plotly
+from plotly.offline import iplot
+from ipywidgets import interact, widgets
+from IPython.display import display
+import dash_daq as daq
+import pandas as pd
 
 def fn_build_dictdata(Spattern,Stype):#Retrieve eviews values and store them in a dictionary
 
-    #pythoncom.CoInitialize()
-    eviewsapp=pyeviews.GetEViewsApp(version='EViews.Manager.11',instance='existing', showwindow=True)
-    
-    Sinstruction = '=@wlookup("' + Spattern + '","' + Stype + '")'
-    Sseries = fn_get_eviewsvalue(eviewsapp, Sinstruction)
-    
+    df = pd.read_excel (r'C:\Users\yacine.rouimi\Desktop\Archive project\Updated archive\Test.xlsx', sheet_name='Sheet1')
+    df = df.astype(object).where(pd.notnull(df),None)
+    df = df.to_dict()
+
     Vdates = fn_create_datelist('2010Q1 2023Q4','Q')
     Vdatesshort = fn_create_datelist('2014Q1 2021Q4','Q')
-    
-    Vseriesname = Sseries.split()
-        
+
     #Build a dictionary of dictionaries
     Ddictfull = {}
 
-    for Smnemonic in Vseriesname:
+    for ikey in df['Mnemonics']:
+
+        Smnemonic = df['Mnemonics'][ikey]
 
         if 'ihs' in Smnemonic.lower():
             Vd = Vdates
         else:
             Vd = Vdatesshort
-            
+
         Ddict={}
-        
+
         for Sdate in Vd:
-            
-            Ddict[Sdate] = fn_get_eviewsdatapoint(eviewsapp,Smnemonic,Sdate)
 
+            Dval = df[Sdate][ikey]
+
+            Ddict[Sdate] = Dval
+                
         Ddictfull[Smnemonic.lower()] = Ddict
-
-    #pythoncom.CoUninitialize()
         
     return Ddictfull
+    
+def fn_filter_competnames(Scon,Siso):#Filter all competitors available in dictionary
 
+    Vcompet = []
+    Scomps = ''
+    
+    for Smnemo in DictDatabase:
+        
+        Scomp = fn_extract_competname(Smnemo)
+    
+        if Siso.lower() in Smnemo.lower() and Scon.lower() in Smnemo.lower() and Scomp not in Scomps and Scomp!='ihs':
+    
+            Scomps = Scomps + ' ' + Scomp
+        
+            Vcompet.append(Scomp)
+            
+    return Vcompet    
+    
+def fn_extract_competname(Smnemo):
+    
+    Vtxt = Smnemo.split("_")
+    
+    Stxt = Vtxt[len(Vtxt)-1]
+    
+    return Stxt
+    
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
+#***********************DATA CALCULATION FUNCTIONS**************************
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
+
+def fn_average(num):
+    sum_num = 0
+    for t in num:
+        sum_num = sum_num + t           
+
+    avg = sum_num / len(num)
+    return avg
 
 def fn_ping_dictdatabase(Dictdata,Smnemonic,Soperation,Sdaterange):
 
@@ -128,6 +171,73 @@ def fn_ping_dictdatabase(Dictdata,Smnemonic,Soperation,Sdaterange):
             Vmat.append(valeur)
                 
     return Vmat    
+    
+def fn_draw_circle(R, Cx, Cy,Cz,option3d):
+    
+    import math
+    
+    if option3d != '3d':
+        #Radians
+        Vi=[i for i in range(0,361)]
+        Vradians= [math.pi/180*i for i in Vi]
+        Vx = [math.sin(radian)*R+Cx for radian in Vradians]
+        Vy = [math.cos(radian)*R+Cy for radian in Vradians]
+        Vxyz = [Vx,Vy]
+
+    if option3d == '3d':
+        step = 20
+        #Radians
+        Vi=[i for i in range(-360,361,step)]
+        Vu= [math.pi/180*i for i in Vi];Vv= [math.pi/360*i for i in Vi]
+        Vx0 =[math.sin(u)*math.sin(v)*R+Cx for u in Vu for v in Vv]
+        Vy0 =[math.cos(v)*R+Cy for u in Vu  for v in Vv]
+        Vz0 =[math.cos(u)*math.sin(v)*R+Cz for u in Vu for v in Vv]   
+        Vy = Vx0;Vz = Vy0;Vx = Vz0;Vxyz = [Vx,Vy,Vz]
+    
+    return Vxyz    
+
+def fn_calc_aveerror(Smnemo,Vminmaxyear,ihorizon,Sprovider):
+
+    nbq = ihorizon / 3
+    Vyy = [];miniYear = Vminmaxyear[0]
+    if len(Vminmaxyear)>1:
+        maxiYear = Vminmaxyear[1]
+    else:
+        maxiYear = miniYear
+    
+    Snone = 'no'
+    
+    for iYear in range(miniYear,maxiYear+1):
+
+        Sreleasedate = str(iYear+1) + 'Q2'
+
+        Svintage = fn_Qdate_offset(Sreleasedate,-nbq);Dvintage = fn_convert_Sdaterange([Svintage])
+        Svintage = 'Q' + str(Dvintage[0].month//3) + fn_extract_leftmidright('right',str(Dvintage[0].year),2) 
+        Smnemonic = Smnemo + '_' + Svintage + '_' + Sprovider
+        Vdatapoint = fn_ping_dictdatabase(DictDatabase,Smnemonic,'4q4q',str(iYear) + 'Q4')
+        Smnemonic = Smnemo + '_' + 'Q2' + fn_extract_leftmidright('right',str(iYear+1),2) + '_ihs'  #+ Sprovider   Take ihs, as the data for previous year is not available in consensus sheet (We had )
+        Vdatapoint2 = fn_ping_dictdatabase(DictDatabase,Smnemonic,'4q4q',str(iYear) + 'Q4')
+        
+        if Vdatapoint[0]!=None and Vdatapoint2[0]!=None:
+            Vyy.append(abs(Vdatapoint[0]-Vdatapoint2[0]))
+        else:
+            Vyy.append(None)
+            Snone = 'yes'
+    
+    if Snone == 'no':
+        averror = fn_average(Vyy) 
+    else:
+        averror = None 
+        
+    return averror
+    
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
+#***********************DATE MANAGEMENT FUNCTIONS***************************
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
 
 def fn_Qdate_offset(Sdate,nbq):
     
@@ -160,8 +270,151 @@ def fn_create_datelist(Sdaterange,Sfreq):
         
     return dateslist
 
+def fn_convert_Sdaterange(Vdates):
+    
+    #Idea, find whether you have "M" or "Q" in the date, split, and calculate associated numeric date accordingly
+    Vmat = []
+    
+    for Sdate in Vdates:
+        
+        iyear = int(Sdate[:4]);n = len(Sdate);imonth = int(Sdate[(n-1):])*3;Ddate = dt.datetime(iyear, imonth, 1)
+        Vmat.append(Ddate)
+        
+    return Vmat
 
+def fn_convert_Q115to2015Q1date(Vdates):
+    
+    #Idea, find whether you have "M" or "Q" in the date, split, and calculate associated numeric date accordingly
+    Vmat = []
+    
+    for Sdate in Vdates:
+        
+        iyear = int('20' + fn_extract_leftmidright('right',Sdate,2));n = len(Sdate);imonth = int(fn_extract_leftmidright('mid',Sdate,1,1))
+        Stxt = str(iyear) + 'Q' + str(imonth)
+        Vmat.append(Stxt)
+        
+    return Vmat
 
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
+#***********************STRING MANAGEMENT FUNCTIONS*************************
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
+
+def fn_isvalueinlist(value, Vlist):
+    
+    Sfound = 'no'
+    
+    for y in Vlist:
+        
+        if y==value:
+            
+            Sfound = 'yes'
+            
+    return Sfound
+
+def fn_find_plural(Sword): #Finds the plural form of a word
+
+    n = len(Sword); Slast = Sword[(n-1):]
+    if Slast == 'y': 
+        Stxt = Sword[:(n-1)] + 'ies' 
+    else:
+        Stxt = Sword + 's'
+    
+    return Stxt
+
+def fn_extract_keytypes(Ddic): #Finds all keys looking the same in a dictionary (Scenario, Concept etc)
+
+    Lkeys = []
+    
+    for Skey in Ddic.keys():
+    
+        Skeytype = ''.join([i for i in Skey if not i.isdigit()])
+        Lkeys.append(Skeytype.lower())
+
+    Lkeys = list(dict.fromkeys(Lkeys))
+
+    return Lkeys
+
+def fn_extract_leftmidright(Stype,Stxt,nbcars,start=0):
+
+    if Stype.lower() == 'left':return Stxt[0:nbcars]
+    if Stype.lower() == 'right':return Stxt[len(Stxt)-nbcars:]
+    if Stype.lower() == 'mid':return Stxt[start:(start+nbcars)]
+
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
+#******************************SPECIAL FUNCTIONS****************************
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
+#Here to make life easier and apply in a few cases, not generally
+    
+#Returns first elements, value in string form (with %), second: number, third: color
+def fn_split_circleparams(Vcircles,Bnospace):
+    
+    Vnew = []
+    
+    for Vc in Vcircles:
+        
+        if Bnospace == True:
+            Vc = Vc.replace(' ','')
+        Vc = Vc.replace(';',',');Vc = Vc.replace(':',',')
+        if Vc !='':
+            Vmat = []
+            Vtxt = Vc.split(",")
+            Vmat.append(Vtxt[0])
+            Dfactor = 100 if Vmat[0].find('%') != -1 else 1 
+            Vmat.append(float(Vmat[0].strip('%'))/Dfactor)
+            Vmat.append(Vtxt[1])
+            Vnew.append(Vmat)
+    
+    return Vnew
+    
+def fn_split_regionparams(Vregions,Bnospace=False):
+    
+    Vnew = []
+    
+    for Vc in Vregions:
+        
+        if Bnospace == True:
+            Vc = Vc.replace(' ','')
+        Vc = Vc.replace(';',',');Vc = Vc.replace(':',',')
+        if Vc !='':
+            Vmat = []
+            Vtxt = Vc.split(",")
+            Vmat.append(Vtxt[0])
+            Vmat.append(Vtxt[1])
+            Vnew.append(Vmat)
+    
+    return Vnew
+    
+def linspace_perso(start, stop, n):
+
+    if n ==1:
+        return [start,stop]
+    
+    Vx = []
+    
+    h = (stop - start) / (n - 1)
+
+    for i in range(n):
+       
+        Vx.append(start + h * i)
+
+    return Vx
+    
+    
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
+#******************************USER ENTRY***********************************
+#***************************************************************************
+#***************************************************************************
+#***************************************************************************
 
 def fn_create_paramsboxform(Schartid,Lcontrols):
         
@@ -245,8 +498,6 @@ def fn_help(Spart):
         Smsg = '- The top left chart shows the projection at a point in time for every contributor' 
         Smsg = Smsg + '- The top right chart shows the position of the forecast for the selected country against other competitors'
         Smsg = Smsg + '- The bottom chart compares IHS forecast to consensus in all available countries'
-
-        
         
     return Smsg
 
