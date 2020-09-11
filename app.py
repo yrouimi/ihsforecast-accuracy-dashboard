@@ -501,6 +501,8 @@ def fn_help(Spart):
         
         
     return Smsg
+
+
 from dash import Dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -509,8 +511,15 @@ from dash.dependencies import Input, Output,State
 import dash_ui as dui
 import plotly.graph_objs as plotlygraphs
 import dash_bootstrap_components as dbc
+import dash_auth
 
 app = Dash(__name__,external_stylesheets=['https://codepen.io/rmarren1/pen/mLqGRg.css',"https://use.fontawesome.com/releases/v5.1.0/css/all.css",dbc.themes.BOOTSTRAP])
+
+# Keep this out of source code repository - save in a file or a database
+VALID_USERNAME_PASSWORD_PAIRS = {
+    'economist': 'ecr'
+}
+
 server = app.server
 app.config['suppress_callback_exceptions'] = True
 app.title = 'Forecast accuracy dashboard'
