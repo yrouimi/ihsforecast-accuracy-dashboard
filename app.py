@@ -503,6 +503,83 @@ def fn_help(Spart):
     return Smsg
 
 
+DictDatabase = fn_build_dictdata("*","series")
+#print(DictDatabase['gdpr$_deu_q115_imf'])
+
+Dictproviders = {'aba':'Abank','abi':'ABI','abn':'ABN Amro','acra':'ACRA','act':'Action Economics','addi':'Addiko Bank','aff':'Affin Hwang Capital','afi':'AFI','alba':'Albaraka Turk',
+                 'alfa':'Alfa Bank','ali':'Allianz','aig':'AIG','amp':'AMP Capital','anz':'ANZ Bank','asb':'ASB Bank','ace':'ACERD','axa':'AXA IM','bah':'Bahana Securities','bak':'BAK Basel',
+                 'bjb':'Bank Julius Baer','bofa':'BoFA Merrill Lynch','vont':'Bank Vontobel','roma':'Banca Com Romana','bnl':'BNL','bdo':'BDO Unibank','bnd':'Bank Danamon','boar':'Bank of Ayudhya',
+                 'boc':'Bank of China (HK)','boea':'Bank of East Asia','bonzl':'Bank of New Zealand','btm':'Bank of Tokyo-Mitsubishi','peka':'Bank Pekao','perm':'Bank Permata','poct':'Bank Pocztowy',
+                 'zach':'Bank Zachodni','barc':'Barclays','baye':'BayernLB','bbva':'BBVA','beacon':'Beacon Economics','berl':'Berliner Sparkasse','bhf':'BHF-Bank','bipe':'BIPE',
+                 'oxfo':'Oxford Economics','bmo':'BMO Capital Markets','bnp':'BNP Paribas','brcc':'British Chamber Commerce','btfc':'BT Financial Group','burg':'Burgan Securities',
+                 'camb':'Cambridge Econometrics','capec':'Capital Economics','case':'CASE','spat':'Center for Spatial Economics','cer':'Centro Europa Ricerche','ceoe':'CEOE','cepre':'CEPREDE',
+                 'spor':'Ceska Sporitelna','svnco':'Chamber of Commerce','cintl':'China International','chung':'Chung-Hua Institute','budib':'CIB Budapest','cibc':'CIBC','cimb':'CIMB',
+                 'citi':'Citigroup','citam':'Citadele AM','citab':'Citadele Bank','cobi':'Confed of British Industry','coe':'COE-Rexecode','comz':'Commerzbank','cowb':'Commonwealth Bank',
+                 'conc':'Concorde Securities','cobc':'Conf Board of Canada','coii':'Confed of Indian Industry','cswe':'Confed of Swedish Enterprise','cofin':'Confindustria','css':'Consensus (Mean)',
+                 'cpb':'CPB','cacib':'Credit Agricole','cres':'Credit Suisse','cris':'CRISIL','csob':'CSOB','daew':'Daewoo Securities','daii':'Dai-Ichi Life Research','daiw':'Daiwa',
+                 'dana':'Danareksa Securities','dbs':'DBS Bank','deka':'DekaBank','delo':'Deloitte','desj':'Desjardins','dban':'Deutsche Bank','diw':'DIW','dnb':'DNB','dubr':'Dun & Bradstreet',
+                 'dws':'DWS','dyes':'Dynamic Econ Strategy','dzb':'DZ Bank','eat':'Eaton Corporation','eiu':'EIU','ecop':'Economic Perspectives','eipf':'Econ Institute EIPF',
+                 'esav':'Econ Institute SAV','ezag':'Econ Institute Zagreb','epoi':'Econ Policy Institute','ecmap':'Economap','eeg':'EEG','epb':'Erik Penser Bank','erst':'Erste Bank',
+                 'estr':'Est Inst of Econ Rsrch','etla':'ETLA','eufn':'European Forecast Network','euler':'Euler Hermes','eumo':'Euromonitor  International','era':'European Rating Agency',
+                 'exan':'Exane','expe':'Experian','fitr':'Fitch Ratings','fanm':'Fannie Mae','fath':'Fathom Consulting','fedex':'FedEx','feri':'FERI','fnzc':'First NZ Capital',
+                 'fta':'First Trust Advisors','pbp':'FM Bank PBP','ford':'Ford','func':'FUNCAS','gold':'Goldman Sachs','sant':'Grupo Santander','gama':'GAMA','gara':'Garanti Bank',
+                 'gazp':'Gazprombank','gdai':'Gdansk Institute','gmo':'General Motors','gene':'Generali Investments','gsu':'Georgia State University','gei':'German Economic Institute',
+                 'gki':'GKI Econ Research','gld':'GlobalData','hang':'Hang Seng Bank','hela':'Helaba Frankfurt','hete':'Heteronomics','hita':'Hitachi Research Institute','hsbc':'HSBC',
+                 'hwwi':'HWWI','hypo':'Hypo Alpe Bank','icic':'ICICI Securities','idea':'IDEA','ucar':'University Carlos III','ifo':'IFO','ifw':'IFW','inte':'Intesa Sanpaolo',
+                 'inra':'India Ratings & Research','infm':'Infometrics','infr':'Informetrica','uoma':'University of Maryland','ing':'ING','iee':'IEE','ifs':'IFS','uam':'UAM','incr':'Institut Crea',
+                 'icap':'InterCapital Securities','ipag':'IPAG Institute','isin':'IS Investment','bilgu':'Istanbul Bilgi Univ','item':'ITEM Club','itoc':'ITOCHU Institute','iww':'IW','iwh':'IWH',
+                 'jtb':'J&T Bank','jcer':'Japan Center for Econ Research','jpm':'JP Morgan','kasi':'Kasikorn Research','kena':'Kenanga Research','kern':'Kern Consulting','kof':'KOF',
+                 'komb':'Komercni Banka','kopt':'Kopint-Tarki','kota':'Kotak Securities','kpmg':'KPMG','zmi':'KT ZMICO Securities','kuke':'KUKE','liv':'Liverpool Macro','lbp':'La Banque Postale',
+                 'cai':'La Caixa','lcma':'LC Macro Advisors','lgin':'LG Institute','llo':'Lloyds','lom':'Lombard','lumi':'Luminor','luz':'Luzerner Kantonalbank','mac':'Macquarie',
+                 'maca':'Macroeconomic Advisers','man':'Mandiri Sekuritas','may':'Maybank','mel':'Melbourne Institute','met':'Metrobank','mits':'Mitsubishi Research','miz':'Mizuho',
+                 'mkbb':'MKB Bank','mmw':'MM Warburg','moo':'Moody s Analytics','mst':'Morgan Stanley','mufg':'MUFG','nahb':'NAHB','nati':'Natixis','natw':'NatWest','nab':'National Australia Bank',
+                 'nbc':'National Bank of Canada','nier':'NIER','nho':'NHO','nibc':'NIBC','niesr':'NIESR','nist':'Nippon Steel','nli':'NLI','nom':'Nomura','nord':'Nordea','nort':'Northern Trust',
+                 'nzier':'NZIER','ocbc':'OCBC','oddo':'Oddo','odea':'Odeabank','ofce':'OFCE','otpb':'OTP Bank','oyak':'Oyak Securities','pair':'PAIR Conseil','pant':'Pantheon Economics',
+                 'phat':'Phatra Securities','pic':'Pictet','pkob':'PKO Bank Polski','pnc':'PNC','priza':'Privredna Banka','prom':'Prometeia','qic':'QIC','rabo':'Rabobank','raif':'Raiffeisen','rbc':'RBC',
+                 'rbs':'RBS','rdq':'RDQ','ref':'REF','renai':'Renaissance Capital','rep':'Repsol','rhb':'RHB','rfe':'Robert Fry Economics','roug':'Roubini Global','rwi':'RWI Essen','salo':'Sal Oppenheim',
+                 'sams':'Samsung','sbab':'SBAB','sber':'Sberbank','schr':'Schroders','scot':'Scotia Economics','seb':'SE Banken','sebb':'SEB Banka','siam':'Siam Commercial Bank',
+                 'svns':'Slovenska Sporitelna','soge':'Societe Generale','sep':'Standard & Poors','stno':'Statistics Norway','stco':'Stokes Consulting','svh':'Svenska Handelsbanken','swl':'Swiss Life',
+                 'swdb':'Swedbank','swr':'Swiss Re','tsl':'TS Lombard','twni':'Taiwan Insttitute','taka':'Takarek Bank','tatra':'Tatra Banka','teb':'TEB','than':'Thanachart Securities',
+                 'tcbd':'The Conference Board','gili':'Theodoor Gilissen','titc':'Timetric','tisc':'TISCO','tord':'Toronto Dominion Bank','toy':'Toyota','trim':'Trimegah Securities','turkf':'Turkiye Finans',
+                 'ubs':'UBS','unic':'UniCredit','ubub':'United Bulgarian Bank','uov':'United Overseas Bank','uomi':'University of Michigan','uoto':'University of Toronto','uob':'UOB',
+                 'wiiw':'Vienna Institute - WIIW','vtb':'VTB Capital','vub':'VUB Bank','welp':'Wellershoff & Partners','welf':'Wells Fargo','wpac':'Westpac Banking Corp','wgz':'WGZ Bank','yuan':'Yuanta Consulting',
+                 'zurk':'Zürcher Kantonalbank','imf':'IMF','oecd':'OECD','ec':'AMECO','cns':'Consensus','high':'Cons. High','low':'Cons. Low','std':'Cons. Stdev','ihs':'IHS Markit'}
+
+
+#Dictproviders={'abi':'ABI','abn':'ABN Amro','act':'Action Economics','aff':'Affin Hwang Capital','afi':'AFI','ali':'Allianz','aig':'AIG','amp':'AMP Capital','anz':'ANZ Bank',
+#               'asb':'ASB Bank','ace':'ACERD','axa':'AXA IM','bah':'Bahana Securities','bak':'BAK Basel','bjb':'Bank Julius Baer','bofa':'BoFA Merrill Lynch','vont':'Bank Vontobel',
+#               'bnl':'BNL','bdo':'BDO Unibank','bnd':'Bank Danamon','boar':'Bank of Ayudhya','boc':'Bank of China (HK)','boea':'Bank of East Asia','bonzl':'Bank of New Zealand',
+#               'btm':'Bank of Tokyo-Mitsubishi','perm':'Bank Permata','barc':'Barclays','baye':'BayernLB','bbva':'BBVA','beacon':'Beacon Economics','berl':'Berliner Sparkasse',
+#               'bhf':'BHF-Bank','bipe':'BIPE','oxfo':'Oxford Economics','bmo':'BMO Capital Markets','bnp':'BNP Paribas','brcc':'British Chamber Commerce','btfc':'BT Financial Group',
+#               'camb':'Cambridge Econometrics','capec':'Capital Economics','spat':'Center for Spatial Economics','cer':'Centro Europa Ricerche','ceoe':'CEOE','cepre':'CEPREDE',
+#               'cintl':'China International','chung':'Chung-Hua Institute','cibc':'CIBC','cimb':'CIMB','citi':'Citigroup','cobi':'Confed of British Industry','coe':'COE-Rexecode',
+#               'comz':'Commerzbank','cowb':'Commonwealth Bank','cobc':'Conf Board of Canada','coii':'Confed of Indian Industry','cswe':'Confed of Swedish Enterprise',
+#               'cofin':'Confindustria','css':'Consensus (Mean)','cpb':'CPB','cacib':'Credit Agricole','cres':'Credit Suisse','cris':'CRISIL','daew':'Daewoo Securities',
+#               'daii':'Dai-Ichi Life Research','daiw':'Daiwa','dana':'Danareksa Securities','dbs':'DBS Bank','deka':'DekaBank','delo':'Deloitte','desj':'Desjardins','dban':'Deutsche Bank',
+#               'diw':'DIW','dnb':'DNB','dubr':'Dun & Bradstreet','dws':'DWS','dyes':'Dynamic Econ Strategy','dzb':'DZ Bank','eat':'Eaton Corporation','eiu':'EIU','ecop':'Economic Perspectives',
+#               'ecmap':'Economap','epb':'Erik Penser Bank','etla':'ETLA','eufn':'European Forecast Network','euler':'Euler Hermes','eumo':'Euromonitor  International','exan':'Exane','expe':'Experian',
+#               'fitr':'Fitch Ratings','fanm':'Fannie Mae','fath':'Fathom Consulting','fedex':'FedEx','feri':'FERI','fnzc':'First NZ Capital','fta':'First Trust Advisors','ford':'Ford','func':'FUNCAS',
+#               'gold':'Goldman Sachs','sant':'Grupo Santander','gama':'GAMA','gmo':'General Motors','gsu':'Georgia State University','gei':'German Economic Institute','gld':'GlobalData',
+#               'hang':'Hang Seng Bank','hela':'Helaba Frankfurt','hete':'Heteronomics','hita':'Hitachi Research Institute','hsbc':'HSBC','hwwi':'HWWI','icic':'ICICI Securities','idea':'IDEA',
+#               'ucar':'University Carlos III','ifo':'IFO','ifw':'IFW','inte':'Intesa Sanpaolo','inra':'India Ratings & Research','infm':'Infometrics','infr':'Informetrica','uoma':'University of Maryland',
+#               'ing':'ING','iee':'IEE','ifs':'IFS','uam':'UAM','incr':'Institut Crea','item':'ITEM Club','itoc':'ITOCHU Institute','iww':'IW','iwh':'IWH','jcer':'Japan Center for Econ Research',
+#               'jpm':'JP Morgan','kasi':'Kasikorn Research','kena':'Kenanga Research','kern':'Kern Consulting','kof':'KOF','kota':'Kotak Securities','kpmg':'KPMG','zmi':'KT ZMICO Securities','liv':'Liverpool Macro',
+#               'lbp':'La Banque Postale','cai':'La Caixa','lcma':'LC Macro Advisors','lgin':'LG Institute','llo':'Lloyds','lom':'Lombard','luz':'Luzerner Kantonalbank','mac':'Macquarie','maca':'Macroeconomic Advisers',
+#               'man':'Mandiri Sekuritas','may':'Maybank','mel':'Melbourne Institute','met':'Metrobank','mits':'Mitsubishi Research','miz':'Mizuho','mmw':'MM Warburg','moo':'Moodys Analytics',
+#               'mst':'Morgan Stanley','mufg':'MUFG','nahb':'NAHB','nati':'Natixis','natw':'NatWest','nab':'National Australia Bank','nbc':'National Bank of Canada','nier':'NIER','nho':'NHO','nibc':'NIBC',
+#               'niesr':'NIESR','nist':'Nippon Steel','nli':'NLI','nom':'Nomura','nord':'Nordea','nort':'Northern Trust','nzier':'NZIER','ocbc':'OCBC','oddo':'Oddo','ofce':'OFCE','pair':'PAIR Conseil',
+#               'pant':'Pantheon Economics','phat':'Phatra Securities','pic':'Pictet','pnc':'PNC','prom':'Prometeia','qic':'QIC','rabo':'Rabobank','rbc':'RBC','rbs':'RBS','rdq':'RDQ','ref':'REF','rep':'Repsol',
+#               'rhb':'RHB','rfe':'Robert Fry Economics','roug':'Roubini Global','rwi':'RWI Essen','salo':'Sal Oppenheim','sams':'Samsung','sbab':'SBAB','schr':'Schroders','scot':'Scotia Economics','seb':'SE Banken',
+#               'siam':'Siam Commercial Bank','soge':'Societe Generale','sep':'Standard & Poors','stno':'Statistics Norway','stco':'Stokes Consulting','svh':'Svenska Handelsbanken','swl':'Swiss Life',
+#               'swdb':'Swedbank','swr':'Swiss Re','tsl':'TS Lombard','twni':'Taiwan Insttitute','than':'Thanachart Securities','tcbd':'The Conference Board','gili':'Theodoor Gilissen','titc':'Timetric',
+#               'tisc':'TISCO','tord':'Toronto Dominion Bank','toy':'Toyota','trim':'Trimegah Securities','ubs':'UBS','unic':'UniCredit','uov':'United Overseas Bank','uomi':'University of Michigan',
+#               'uoto':'University of Toronto','uob':'UOB','welp':'Wellershoff & Partners','welf':'Wells Fargo','wpac':'Westpac Banking Corp','wgz':'WGZ Bank','yuan':'Yuanta Consulting','zurk':'Zürcher Kantonalbank',
+#               'imf':'IMF','oecd':'OECD','ec':'AMECO','cns':'Consensus','high':'Cons. High','low':'Cons. Low','std':'Cons. Stdev','ihs':'IHS Markit'}
+
+
+
+
+
 from dash import Dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -739,6 +816,7 @@ grid3.add_element(col=12, row=2, width=1, height=2, element=html.Div(form))
 #Chart 16: Dispersion of projections for IHS all countries
 grid3.add_graph(col=1, row=4, width=11,  height=2,graph_id="chart16")
 form = fn_create_paramsboxform('chart16',[
+                                {'Slabel':'Provider','Swhat':'Sprovider','Stype':'dropdown','Soptions':{Dictproviders[Sprovider]:Sprovider for Sprovider in ['oecd','imf','ec','ihs','oxfo','eiu','capec','citi','hsbc','ubs','gold','jpm','barc','feri','bofa','ing','dban']},'Lvalues':['ihs']},
                                 {'Slabel':'Vintage','Swhat':'Svintage','Stype':'dropdown','Soptions':{Svintage:Svintage for Svintage in Vvintages},'Lvalues':['Q117']},
                                 {'Slabel':'Year of forecast','Swhat':'Syear','Stype':'dropdown','Soptions':{'Current':'Current','Next':'Next','Average':'Average','Cumul':'Cumul'},'Lvalues':['Next']},
                                 {'Slabel':'Gap scale','Swhat':'Sdisplay','Stype':'dropdown','Soptions':{'% gap':'gap','# Stdevs':'std'},'Lvalues':['gap']},        
@@ -827,69 +905,6 @@ app.layout = html.Div(
 #**********Retrieve eviews values and store them in a dictionary***************
 #******************************************************************************
 
-DictDatabase = fn_build_dictdata("*","series")
-print(DictDatabase['gdpr$_deu_q115_imf'])
-
-Dictproviders={'abi':'ABI','abn':'ABN Amro','act':'Action Economics','aff':'Affin Hwang','afi':'AFI','ali':'Allianz','aig':'AIG','amp':'AMP Capital','anz':'ANZ Bank',
-               'asb':'ASB Bank','ace':'ACERD','axa':'AXA IM','bah':'Bahana Sec.','bak':'BAK Basel','bjb':'Bank Julius Baer','bofa':'BoFA','vont':'Bank Vontobel',
-               'bnl':'BNL','bdo':'BDO Unibank','bnd':'Bank Danamon','boar':'Bank of Ayudhya','boc':'Bank of China (HK)','boea':'Bank of East Asia','bonzl':'Bank of New Zealand',
-               'btm':'MUFG','perm':'Bank Permata','barc':'Barclays','baye':'BayernLB','bbva':'BBVA','beacon':'Beacon Econ.','berl':'Berliner Sparkasse',
-               'bhf':'BHF-Bank','bipe':'BIPE','oxfo':'Oxford Econ.','bmo':'BMO Capital','bnp':'BNP','brcc':'British Chamber Commerce','btfc':'BT Financial Group',
-               'camb':'Cambridge Econometrics','capec':'Capital Econ.','spat':'Center for Spatial Economics','cer':'Centro Europa Ricerche','ceoe':'CEOE','cepre':'CEPREDE',
-               'cintl':'China Intl.','chung':'Chung-Hua','cibc':'CIBC','cimb':'CIMB','citi':'Citigroup','cobi':'Confed of British Industry','coe':'COE-Rexecode',
-               'comz':'Commerzbank','cowb':'Commonwealth Bank','cobc':'Conf Board of Canada','coii':'Confed of Indian Industry','cswe':'Confed of Swedish Enterprise',
-               'cofin':'Confindustria','css':'Consensus (Mean)','cpb':'CPB','cacib':'Credit Agricole','cres':'Credit Suisse','cris':'CRISIL','daew':'Daewoo Securities',
-               'daii':'Dai-Ichi Life Research','daiw':'Daiwa','dana':'Danareksa Securities','dbs':'DBS Bank','deka':'DekaBank','delo':'Deloitte','desj':'Desjardins','dban':'Deutsche Bank',
-               'diw':'DIW','dnb':'DNB','dubr':'Dun Bradstreet','dws':'DWS','dyes':'Dynamic Econ Strategy','dzb':'DZ Bank','eat':'Eaton Corporation','eiu':'EIU','ecop':'Economic Perspectives',
-               'ecmap':'Economap','epb':'Erik Penser Bank','etla':'ETLA','eufn':'European Forecast Network','euler':'Euler Hermes','eumo':'Euromonitor  Intl.','exan':'Exane','expe':'Experian',
-               'fitr':'Fitch','fanm':'Fannie Mae','fath':'Fathom Consulting','fedex':'FedEx','feri':'FERI','fnzc':'First NZ Capital','fta':'First Trust Advisors','ford':'Ford','func':'FUNCAS',
-               'gold':'Goldman Sachs','sant':'Grupo Santander','gama':'GAMA','gmo':'General Motors','gsu':'Georgia State Univ.','gei':'German Econ. Institute','gld':'GlobalData',
-               'hang':'Hang Seng Bank','hela':'Helaba Frankfurt','hete':'Heteronomics','hita':'Hitachi Research Institute','hsbc':'HSBC','hwwi':'HWWI','icic':'ICICI Securities','idea':'IDEA',
-               'ucar':'Univ. Carlos III','ifo':'IFO','ifw':'IFW','inte':'Intesa Sanpaolo','inra':'India Ratings','infm':'Infometrics','infr':'Informetrica','uoma':'Univ. of Maryland',
-               'ing':'ING','iee':'IEE','ifs':'IFS','uam':'UAM','incr':'Institut Crea','item':'ITEM Club','itoc':'ITOCHU Institute','iww':'IW','iwh':'IWH','jcer':'Japan Center for Econ Research',
-               'jpm':'JP Morgan','kasi':'Kasikorn Research','kena':'Kenanga Research','kern':'Kern Consulting','kof':'KOF','kota':'Kotak Securities','kpmg':'KPMG','zmi':'KT ZMICO Securities','liv':'Liverpool Macro',
-               'lbp':'La Banque Postale','cai':'La Caixa','lcma':'LC Macro Advisors','lgin':'LG Institute','llo':'Lloyds','lom':'Lombard','luz':'Luzerner Kantonalbank','mac':'Macquarie','maca':'Macroeconomic Advisers',
-               'man':'Mandiri Sekuritas','may':'Maybank','mel':'Melbourne Institute','met':'Metrobank','mits':'Mitsubishi Research','miz':'Mizuho','mmw':'MM Warburg','moo':'Moodys Analytics',
-               'mst':'Morgan Stanley','mufg':'MUFG','nahb':'NAHB','nati':'Natixis','natw':'NatWest','nab':'National Australia Bank','nbc':'National Bank of Canada','nier':'NIER','nho':'NHO','nibc':'NIBC',
-               'niesr':'NIESR','nist':'Nippon Steel','nli':'NLI','nom':'Nomura','nord':'Nordea','nort':'Northern Trust','nzier':'NZIER','ocbc':'OCBC','oddo':'Oddo','ofce':'OFCE','pair':'PAIR Conseil',
-               'pant':'Pantheon Econ.','phat':'Phatra Securities','pic':'Pictet','pnc':'PNC','prom':'Prometeia','qic':'QIC','rabo':'Rabobank','rbc':'RBC','rbs':'RBS','rdq':'RDQ','ref':'REF','rep':'Repsol',
-               'rhb':'RHB','rfe':'Robert Fry Economics','roug':'Roubini Global','rwi':'RWI Essen','salo':'Sal Oppenheim','sams':'Samsung','sbab':'SBAB','schr':'Schroders','scot':'Scotia Economics','seb':'SE Banken',
-               'siam':'Siam Commercial Bank','soge':'Societe Generale','sep':'Standard & Poors','stno':'Statistics Norway','stco':'Stokes Consulting','svh':'Svenska Handelsbanken','swl':'Swiss Life',
-               'swdb':'Swedbank','swr':'Swiss Re','tsl':'TS Lombard','twni':'Taiwan Insttitute','than':'Thanachart Securities','tcbd':'The Conference Board','gili':'Theodoor Gilissen','titc':'Timetric',
-               'tisc':'TISCO','tord':'Toronto Dominion Bank','toy':'Toyota','trim':'Trimegah Securities','ubs':'UBS','unic':'UniCredit','uov':'United Overseas Bank','uomi':'Univ. of Michigan',
-               'uoto':'Univ. of Toronto','uob':'UOB','welp':'Wellershoff & Partners','welf':'Wells Fargo','wpac':'Westpac Banking','wgz':'WGZ Bank','yuan':'Yuanta Consulting','zurk':'Zürcher Kantonalbank',
-               'imf':'IMF','oecd':'OECD','ec':'AMECO','cns':'Consensus','high':'Cons. High','low':'Cons. Low','std':'Cons. Stdev','ihs':'IHS Markit'}
-
-
-#Dictproviders={'abi':'ABI','abn':'ABN Amro','act':'Action Economics','aff':'Affin Hwang Capital','afi':'AFI','ali':'Allianz','aig':'AIG','amp':'AMP Capital','anz':'ANZ Bank',
-#               'asb':'ASB Bank','ace':'ACERD','axa':'AXA IM','bah':'Bahana Securities','bak':'BAK Basel','bjb':'Bank Julius Baer','bofa':'BoFA Merrill Lynch','vont':'Bank Vontobel',
-#               'bnl':'BNL','bdo':'BDO Unibank','bnd':'Bank Danamon','boar':'Bank of Ayudhya','boc':'Bank of China (HK)','boea':'Bank of East Asia','bonzl':'Bank of New Zealand',
-#               'btm':'Bank of Tokyo-Mitsubishi','perm':'Bank Permata','barc':'Barclays','baye':'BayernLB','bbva':'BBVA','beacon':'Beacon Economics','berl':'Berliner Sparkasse',
-#               'bhf':'BHF-Bank','bipe':'BIPE','oxfo':'Oxford Economics','bmo':'BMO Capital Markets','bnp':'BNP Paribas','brcc':'British Chamber Commerce','btfc':'BT Financial Group',
-#               'camb':'Cambridge Econometrics','capec':'Capital Economics','spat':'Center for Spatial Economics','cer':'Centro Europa Ricerche','ceoe':'CEOE','cepre':'CEPREDE',
-#               'cintl':'China International','chung':'Chung-Hua Institute','cibc':'CIBC','cimb':'CIMB','citi':'Citigroup','cobi':'Confed of British Industry','coe':'COE-Rexecode',
-#               'comz':'Commerzbank','cowb':'Commonwealth Bank','cobc':'Conf Board of Canada','coii':'Confed of Indian Industry','cswe':'Confed of Swedish Enterprise',
-#               'cofin':'Confindustria','css':'Consensus (Mean)','cpb':'CPB','cacib':'Credit Agricole','cres':'Credit Suisse','cris':'CRISIL','daew':'Daewoo Securities',
-#               'daii':'Dai-Ichi Life Research','daiw':'Daiwa','dana':'Danareksa Securities','dbs':'DBS Bank','deka':'DekaBank','delo':'Deloitte','desj':'Desjardins','dban':'Deutsche Bank',
-#               'diw':'DIW','dnb':'DNB','dubr':'Dun & Bradstreet','dws':'DWS','dyes':'Dynamic Econ Strategy','dzb':'DZ Bank','eat':'Eaton Corporation','eiu':'EIU','ecop':'Economic Perspectives',
-#               'ecmap':'Economap','epb':'Erik Penser Bank','etla':'ETLA','eufn':'European Forecast Network','euler':'Euler Hermes','eumo':'Euromonitor  International','exan':'Exane','expe':'Experian',
-#               'fitr':'Fitch Ratings','fanm':'Fannie Mae','fath':'Fathom Consulting','fedex':'FedEx','feri':'FERI','fnzc':'First NZ Capital','fta':'First Trust Advisors','ford':'Ford','func':'FUNCAS',
-#               'gold':'Goldman Sachs','sant':'Grupo Santander','gama':'GAMA','gmo':'General Motors','gsu':'Georgia State University','gei':'German Economic Institute','gld':'GlobalData',
-#               'hang':'Hang Seng Bank','hela':'Helaba Frankfurt','hete':'Heteronomics','hita':'Hitachi Research Institute','hsbc':'HSBC','hwwi':'HWWI','icic':'ICICI Securities','idea':'IDEA',
-#               'ucar':'University Carlos III','ifo':'IFO','ifw':'IFW','inte':'Intesa Sanpaolo','inra':'India Ratings & Research','infm':'Infometrics','infr':'Informetrica','uoma':'University of Maryland',
-#               'ing':'ING','iee':'IEE','ifs':'IFS','uam':'UAM','incr':'Institut Crea','item':'ITEM Club','itoc':'ITOCHU Institute','iww':'IW','iwh':'IWH','jcer':'Japan Center for Econ Research',
-#               'jpm':'JP Morgan','kasi':'Kasikorn Research','kena':'Kenanga Research','kern':'Kern Consulting','kof':'KOF','kota':'Kotak Securities','kpmg':'KPMG','zmi':'KT ZMICO Securities','liv':'Liverpool Macro',
-#               'lbp':'La Banque Postale','cai':'La Caixa','lcma':'LC Macro Advisors','lgin':'LG Institute','llo':'Lloyds','lom':'Lombard','luz':'Luzerner Kantonalbank','mac':'Macquarie','maca':'Macroeconomic Advisers',
-#               'man':'Mandiri Sekuritas','may':'Maybank','mel':'Melbourne Institute','met':'Metrobank','mits':'Mitsubishi Research','miz':'Mizuho','mmw':'MM Warburg','moo':'Moodys Analytics',
-#               'mst':'Morgan Stanley','mufg':'MUFG','nahb':'NAHB','nati':'Natixis','natw':'NatWest','nab':'National Australia Bank','nbc':'National Bank of Canada','nier':'NIER','nho':'NHO','nibc':'NIBC',
-#               'niesr':'NIESR','nist':'Nippon Steel','nli':'NLI','nom':'Nomura','nord':'Nordea','nort':'Northern Trust','nzier':'NZIER','ocbc':'OCBC','oddo':'Oddo','ofce':'OFCE','pair':'PAIR Conseil',
-#               'pant':'Pantheon Economics','phat':'Phatra Securities','pic':'Pictet','pnc':'PNC','prom':'Prometeia','qic':'QIC','rabo':'Rabobank','rbc':'RBC','rbs':'RBS','rdq':'RDQ','ref':'REF','rep':'Repsol',
-#               'rhb':'RHB','rfe':'Robert Fry Economics','roug':'Roubini Global','rwi':'RWI Essen','salo':'Sal Oppenheim','sams':'Samsung','sbab':'SBAB','schr':'Schroders','scot':'Scotia Economics','seb':'SE Banken',
-#               'siam':'Siam Commercial Bank','soge':'Societe Generale','sep':'Standard & Poors','stno':'Statistics Norway','stco':'Stokes Consulting','svh':'Svenska Handelsbanken','swl':'Swiss Life',
-#               'swdb':'Swedbank','swr':'Swiss Re','tsl':'TS Lombard','twni':'Taiwan Insttitute','than':'Thanachart Securities','tcbd':'The Conference Board','gili':'Theodoor Gilissen','titc':'Timetric',
-#               'tisc':'TISCO','tord':'Toronto Dominion Bank','toy':'Toyota','trim':'Trimegah Securities','ubs':'UBS','unic':'UniCredit','uov':'United Overseas Bank','uomi':'University of Michigan',
-#               'uoto':'University of Toronto','uob':'UOB','welp':'Wellershoff & Partners','welf':'Wells Fargo','wpac':'Westpac Banking Corp','wgz':'WGZ Bank','yuan':'Yuanta Consulting','zurk':'Zürcher Kantonalbank',
-#               'imf':'IMF','oecd':'OECD','ec':'AMECO','cns':'Consensus','high':'Cons. High','low':'Cons. Low','std':'Cons. Stdev','ihs':'IHS Markit'}
 @app.callback([Output('ProviderSelection', 'options'),Output('ProviderSelection', 'value')],[Input('ConceptSelection', 'value'),Input('IsoSelection', 'value')],state=[State(component_id='ProviderSelection', component_property='value')])
 def fn_update_providers(Scon,Siso,Vproviders):
     
@@ -2867,9 +2882,9 @@ def fn_create_chart15(Scon,Siso,Vproviders,Svintage,Sstep,Smode,Spointsize,Swhat
     return fig
     
 @app.callback(Output(component_id='chart16', component_property='figure'),
-              [Input('ConceptSelection', 'value'),Input('IsoSelection', 'value'),Input('chart16Svintage','value'),Input('chart16Sstep','value'),
+              [Input('ConceptSelection', 'value'),Input('IsoSelection', 'value'),Input('chart16Sprovider','value'),Input('chart16Svintage','value'),Input('chart16Sstep','value'),
                Input('chart16Smode','value'),Input('chart16Spointsize','value'),Input('chart16Syear', 'value'),Input('chart16Sdisplay', 'value')])
-def fn_create_chart16(Scon,Sisoselected,Svintage,Sstep,Smode,Spointsize,Swhatyear,Sdisplay):
+def fn_create_chart16(Scon,Sisoselected,Sprovider,Svintage,Sstep,Smode,Spointsize,Swhatyear,Sdisplay):
 
     Syear = '20' + fn_extract_leftmidright('right',Svintage,2)
         
@@ -2880,7 +2895,8 @@ def fn_create_chart16(Scon,Sisoselected,Svintage,Sstep,Smode,Spointsize,Swhatyea
     Stitle = 'Dispersion of forecasts around consensus'
     Stitle = Stitle + ' - ' + 'Vintage: ' + Svintage
     Stitle = Stitle + ' - ' + Dcons[Scon]
-    Stitle = Stitle + '<br>' + 'Year: ' + Syear
+    Stitle = Stitle + '<br>' + 'Provider: ' + Dictproviders[Sprovider]
+    Stitle = Stitle + ' - Year: ' + Syear
     
     if Swhatyear == 'Cumul':
         Stitle = Stitle + '-' + fn_extract_leftmidright('right',str(int(Syear)+1),2,1) + ' (cumul)'
@@ -2898,7 +2914,8 @@ def fn_create_chart16(Scon,Sisoselected,Svintage,Sstep,Smode,Spointsize,Swhatyea
     fig.update_layout({"title": {"text": Stitle,"font": {"size": 14}},'xaxis':{'title':Sx},'yaxis':{'title':'Number of countries'}})
     fig.update_layout({'xaxis':{'tickformat':Sx2},'yaxis':{'tickformat':'0'}})
 
-    Sprovider = 'ihs';Dvals = {}
+    #Sprovider = 'ihs'
+    Dvals = {}
     
     for Siso in Disos:
     
@@ -3045,6 +3062,7 @@ def fn_create_chart16(Scon,Sisoselected,Svintage,Sstep,Smode,Spointsize,Swhatyea
     fig.add_trace(plotlygraphs.Scatter(x=Vxx,y=Vyy,mode='lines',name = 'Density',marker=dict(color='black')))
     
     return fig
+
     
 
 
