@@ -866,11 +866,17 @@ grid4.add_graph(col=7, row=4, width=6, height=2, graph_id="chart7")
 ############################################################# Genr app layout#########################################################################
 ######################################################################################################################################################
 
+#app.layout = html.Div(
+#    [html.Div(dui.Layout(grid=grid,controlpanel=controlpanel),style={'height': '100vh','width': '99vw'}),
+#    html.Div(dui.Layout(grid=grid2,controlpanel=controlpanel2),style={'height': '150vh','width': '99vw'}),
+#    html.Div(dui.Layout(grid=grid3,controlpanel=controlpanel3),style={'height': '83vh','width': '99vw'}),
+#    html.Div(dui.Layout(grid=grid4,controlpanel=controlpanel4),style={'height': '83vh','width': '99vw'})])
+
 app.layout = html.Div(
     [html.Div(dui.Layout(grid=grid,controlpanel=controlpanel),style={'height': '100vh','width': '99vw'}),
-    html.Div(dui.Layout(grid=grid2,controlpanel=controlpanel2),style={'height': '150vh','width': '99vw'}),
-    html.Div(dui.Layout(grid=grid3,controlpanel=controlpanel3),style={'height': '83vh','width': '99vw'}),
-    html.Div(dui.Layout(grid=grid4,controlpanel=controlpanel4),style={'height': '83vh','width': '99vw'})])
+    html.Div(dui.Layout(grid=grid2,controlpanel=controlpanel2),style={'height': '100vh','width': '99vw'}),
+    html.Div(dui.Layout(grid=grid3,controlpanel=controlpanel3),style={'height': '100vh','width': '99vw'}),
+    html.Div(dui.Layout(grid=grid4,controlpanel=controlpanel4),style={'height': '100vh','width': '99vw'})])
 
 
 
